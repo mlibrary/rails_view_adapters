@@ -19,13 +19,16 @@ Gem::Specification.new do |spec|
   spec.bindir        = "exe"
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
+  spec.test_files = Dir["spec/**/*"]
 
   spec.required_ruby_version = ">= 2.2.2"
 
-  spec.add_development_dependency "bundler", "~> 1.13"
-  spec.add_development_dependency "rake", "~> 10.0"
-  spec.add_development_dependency "rspec", "~> 3.0"
+  spec.add_dependency "rails", "~> 5.0.0", ">= 4"
+
+  spec.add_development_dependency "sqlite3"
   spec.add_development_dependency "rspec-rails"
-  spec.add_development_dependency "activesupport"
+  spec.add_development_dependency "faker"
+  spec.add_development_dependency "fabrication"
+
 
 end
