@@ -10,8 +10,8 @@ RSpec.configure do |config|
 
   config.shared_context_metadata_behavior = :apply_to_host_groups
 
-  config.order = :random
-  Kernel.srand config.seed
+  # config.order = :random
+  # Kernel.srand config.seed
 end
 
 require "rails_view_adapters"
