@@ -7,11 +7,15 @@ module RailsViewAdapters
   # Top level namespace for defining the adapters.
   module Adapter
 
-    FIELDS = [:simple_maps, :model_fields, :public_fields]
+    FIELDS = [
+      :model_fields, :public_fields,
+      :to_maps, :from_maps, :simple_maps
+    ]
 
     def self.define(name, &block)
-      proxy = DefinitionProxy.new(Map.new).instance_eval(&block)
-      Object.const_set(name.capitalize, adapter_from_map(proxy.map))
+      proxy = DefinitionProxy.new(Map.new)
+      proxy.instance_eval(&block)
+      Object.const_set(name.to_s.classify, adapter_from_map(proxy.map))
     end
 
 
