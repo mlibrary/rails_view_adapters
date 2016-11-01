@@ -83,25 +83,26 @@ module RailsViewAdapters
     #   usually the association's name.
     # @param [Symbol] public_field The public field.
     # @param [Hash] options
-    # @option options [Class] :model_class The class of the model, if it cannot
-    #   be inferred from the model_field.
+    # @option options [Class] :model_class The class of the associated model,
+    #   if it cannot be inferred from the model_field.
     # @option options [Symbol] :sub_method The method of the association model
     #   that holds the desired data.  If this isn't provided, it's assumed
     #   to be the same as public_field.
+    # @option options [Symbol] :only Only create the to_map or the from_map, as
+    #   directed by setting this to :to or :from, respectively.
     def map_belongs_to(model_field, public_field, options = {})
       model_class = options[:model_class] || model_field.to_s.classify.constantize
       sub_method = options[:sub_method] || public_field
-      model_field_id = :"#{model_field}_id"
 
       unless options[:only] == :to
         map_from_public public_field do |value|
           record = model_class.send(:"find_by_#{sub_method}", value)
-          {model_field_id => record ? record.id : nil}
+          {model_field => record ? record.id : nil}
         end
       end
 
       unless options[:only] == :from
-        map_to_public model_field_id do |id|
+        map_to_public model_field do |id|
           {public_field => model_class.find_by(id: id).send(sub_method)}
         end
       end
@@ -126,7 +127,7 @@ module RailsViewAdapters
         map_from_public public_field do |value|
           result = {model_field => model_class.where(sub_method => value)}
           public_field_size = value.respond_to?(:size) ? value.size : 0
-          result[model_field].fill(nil, result[model_field].size, public_field_size - result[model_field].size)
+          result[model_field] = result[model_field].to_a.fill(nil, result[model_field].size, public_field_size - result[model_field].size)
           result
         end
       end

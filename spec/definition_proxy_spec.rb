@@ -1,4 +1,5 @@
 require "spec_helper"
+require "active_record_helper"
 
 module RailsViewAdapters
 
@@ -89,6 +90,10 @@ module RailsViewAdapters
         proxy.map_date(model_field, public_field, date_format)
         expect(proxy.map.public_fields).to eql([public_field])
       end
+      it "creates no simple_maps" do
+        proxy.map_date(model_field, public_field, date_format)
+        expect(proxy.map.simple_maps).to eql([])
+      end
       it "creates the correct to_maps" do
         proxy.map_date(model_field, public_field, date_format)
         expect(proxy.map.to_maps[0]).to contain_exactly(model_field, an_instance_of(Proc))
@@ -154,6 +159,81 @@ module RailsViewAdapters
           proxy.map_bool(model_field, public_field)
           expect(proxy.map.from_maps[0][1].call(null)).to eql({model_field => nil})
         end
+      end
+    end
+
+    describe "#map_belongs_to" do
+      let(:model_field) { :user_id }
+      let(:public_field) { :user_name }
+      let(:options) { {model_class: User, sub_method: :name} }
+      let(:post) { Fabricate(:post, user: Fabricate(:user)) }
+      it "creates the correct model_fields" do
+        proxy.map_belongs_to(model_field, public_field, options)
+        expect(proxy.map.model_fields).to contain_exactly(model_field)
+      end
+      it "creates the correct public_fields" do
+        proxy.map_belongs_to(model_field, public_field, options)
+        expect(proxy.map.public_fields).to contain_exactly(public_field)
+      end
+      it "creates no simple_maps" do
+        proxy.map_belongs_to(model_field, public_field, options)
+        expect(proxy.map.simple_maps).to eql([])
+      end
+      it "creates the correct to_maps" do
+        proxy.map_belongs_to(model_field, public_field, options)
+        expect(proxy.map.to_maps[0]).to contain_exactly(model_field, an_instance_of(Proc))
+      end
+      it "creates the correct from_maps" do
+        proxy.map_belongs_to(model_field, public_field, options)
+        expect(proxy.map.from_maps[0]).to contain_exactly(public_field, an_instance_of(Proc))
+      end
+      it "defines a to_map that converts the model's parent to the public's field:value string" do
+        proxy.map_belongs_to(model_field, public_field, options)
+        expect(proxy.map.to_maps[0][1].call(post.user.id))
+          .to eql({public_field => post.user.name})
+      end
+      it "defines a from_map that converts the public's string to the model's owning model id" do
+        proxy.map_belongs_to(model_field, public_field, options)
+        expect(proxy.map.from_maps[0][1].call(post.user.name))
+          .to eql({model_field => post.user.id})
+      end
+    end
+
+    describe "#map_has_many" do
+      let(:model_field) { :posts }
+      let(:public_field) { :post_dates }
+      let(:options) { {model_class: Post, sub_method: :created_at } }
+      let(:user) { Fabricate(:user) }
+      before(:each) { Fabricate.times(2, :post, user: user) }
+      it "creates the correct model_fields" do
+        proxy.map_has_many(model_field, public_field, options)
+        expect(proxy.map.model_fields).to contain_exactly(model_field)
+      end
+      it "creates the correct public_fields" do
+        proxy.map_has_many(model_field, public_field, options)
+        expect(proxy.map.public_fields).to contain_exactly(public_field)
+      end
+      it "creates no simple_maps" do
+        proxy.map_has_many(model_field, public_field, options)
+        expect(proxy.map.simple_maps).to eql([])
+      end
+      it "creates the correct to_maps" do
+        proxy.map_has_many(model_field, public_field, options)
+        expect(proxy.map.to_maps[0]).to contain_exactly(model_field, an_instance_of(Proc))
+      end
+      it "creates the correct from_maps" do
+        proxy.map_has_many(model_field, public_field, options)
+        expect(proxy.map.from_maps[0]).to contain_exactly(public_field, an_instance_of(Proc))
+      end
+      it "defines a to_map that converts the model's children to the public's Array<String>" do
+        proxy.map_has_many(model_field, public_field, options)
+        expect(proxy.map.to_maps[0][1].call(user.posts))
+          .to eql({public_field => user.posts.pluck(:created_at)})
+      end
+      it "defines a from_map that converts the public's string to the model's owning models" do
+        proxy.map_has_many(model_field, public_field, options)
+        expect(proxy.map.from_maps[0][1].call(user.posts.pluck(:created_at).to_a))
+          .to eql({model_field => user.posts.to_a})
       end
     end
 
