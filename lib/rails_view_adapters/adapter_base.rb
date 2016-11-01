@@ -3,6 +3,7 @@
 # Licensed according to the terms of the Revised BSD License
 # See LICENSE.md for details.
 
+require "active_support/core_ext/hash"
 
 module RailsViewAdapters
   class AdapterBase
