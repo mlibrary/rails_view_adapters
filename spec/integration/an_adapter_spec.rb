@@ -27,12 +27,12 @@ module RailsViewAdapters
 
       @public_hash = {
         author: @model.name,
-        member_since: @model.join_date.strftime(date_format),
+        member_since: @model.join_date.in_time_zone.strftime(date_format),
         super_user: @model.admin,
         favorite_team: @model.team.id,
         all_posts: @model.posts.pluck(:body),
-        created_at: @model.created_at.strftime(date_format),
-        updated_at: @model.updated_at.strftime(date_format)
+        created_at: @model.created_at.in_time_zone.strftime(date_format),
+        updated_at: @model.updated_at.in_time_zone.strftime(date_format)
       }
 
       @model_hash = {
