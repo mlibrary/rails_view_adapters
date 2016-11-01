@@ -56,7 +56,7 @@ module RailsViewAdapters
     def map_date(model_field, public_field, date_format)
       raise ArgumentError if date_format.nil?
       map_from_public public_field do |value|
-        {model_field => Time.strptime(value, date_format)}
+        {model_field => time_from_public(value, date_format)}
       end
       map_to_public model_field do |value|
         {public_field => value.strftime(date_format)}
@@ -86,23 +86,23 @@ module RailsViewAdapters
     # @option options [Class] :model_class The class of the associated model,
     #   if it cannot be inferred from the model_field.
     # @option options [Symbol] :sub_method The method of the association model
-    #   that holds the desired data.  If this isn't provided, it's assumed
-    #   to be the same as public_field.
+    #   that holds the desired data.  Default is :id.
     # @option options [Symbol] :only Only create the to_map or the from_map, as
     #   directed by setting this to :to or :from, respectively.
     def map_belongs_to(model_field, public_field, options = {})
       model_class = options[:model_class] || model_field.to_s.classify.constantize
-      sub_method = options[:sub_method] || public_field
+      sub_method = options[:sub_method] || :id
+      model_field_id = :"#{model_field.to_s.sub(/(_id|)\Z/, '_id')}"
 
       unless options[:only] == :to
         map_from_public public_field do |value|
           record = model_class.send(:"find_by_#{sub_method}", value)
-          {model_field => record ? record.id : nil}
+          {model_field_id => record ? record.id : nil}
         end
       end
 
       unless options[:only] == :from
-        map_to_public model_field do |id|
+        map_to_public model_field_id do |id|
           {public_field => model_class.find_by(id: id).send(sub_method)}
         end
       end
@@ -134,13 +134,21 @@ module RailsViewAdapters
 
       unless options[:only] == :from
         map_to_public model_field do |records|
-          {public_field => records.pluck(sub_method.to_sym)}
+          {public_field => records.map(&sub_method.to_sym)}
         end
       end
     end
 
 
     private
+
+    def time_from_public(time, date_format)
+      if time.is_a? String
+        return Time.strptime(time, date_format)
+      else
+        return time
+      end
+    end
 
     def to_bool(value)
       return nil if value == nil || value =~ (/^(null|nil)$/i)

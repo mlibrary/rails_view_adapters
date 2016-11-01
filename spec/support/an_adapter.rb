@@ -14,7 +14,7 @@ shared_examples "an adapter" do |hidden_params|
   describe ".from_model" do
     it "can be created from a model" do
       expect{
-        described_class.from_model(model)
+        adapter_class.from_model(model)
       }.to_not raise_error
     end
   end
@@ -22,24 +22,24 @@ shared_examples "an adapter" do |hidden_params|
   describe ".from_public" do
     it "can be created from a model" do
       expect{
-        described_class.from_public(public_hash)
+        adapter_class.from_public(public_hash)
       }.to_not raise_error
     end
     it "handles missing data" do
       expect{
-        described_class.from_public({})
+        adapter_class.from_public({})
       }.to_not raise_error
     end
   end
 
   context "starting with .from_public" do
-    let(:adapter) { described_class.from_public(public_hash.merge({unrelated: :unchanged}).merge(hidden_params)) }
+    let(:adapter) { adapter_class.from_public(public_hash.merge({unrelated: :unchanged}).merge(hidden_params)) }
     include_examples "adapter output", {unrelated: :unchanged}
   end
 
 
   context "starting with .from_model" do
-    let(:adapter) { described_class.from_model(model) }
+    let(:adapter) { adapter_class.from_model(model) }
     include_examples "adapter output", {}
   end
 end

@@ -90,7 +90,7 @@ module Matchers
         return match_arrays(actual, expected)
       elsif actual_responds_to.include? :has_key?
         return match_hashes(actual, expected)
-      elsif actual.is_a? ActiveRecord::AdapterBase
+      elsif actual.is_a? ActiveRecord::Base
         return match_active_records(actual, expected)
       elsif actual.respond_to? :strftime
         return match_times(actual, expected)

@@ -1,6 +1,4 @@
 class User < ActiveRecord::Base
-  has_many :memberships
-  has_many :teams, through: :memberships
-
+  belongs_to :team
   has_many :posts
 end
