@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Bryan Hockey"]
   spec.email         = ["bhock@umich.edu"]
 
-  spec.summary       = "Mappings between models and external views."
-  spec.description   = "Bidirecattional mappings between public and model representations."
+  spec.summary       = "Bidirectional mappings between models and external views for Rails."
+  spec.description   = spec.summary
   spec.homepage      = "https://github.com/mlibrary/rails_view_adapters"
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
@@ -31,6 +31,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "faker"
   spec.add_development_dependency "fabrication"
   spec.add_development_dependency "pry"
-
-
 end
