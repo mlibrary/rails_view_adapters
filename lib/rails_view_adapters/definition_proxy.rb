@@ -56,10 +56,10 @@ module RailsViewAdapters
     def map_date(model_field, public_field, date_format)
       raise ArgumentError if date_format.nil?
       map_from_public public_field do |value|
-        {model_field => time_from_public(value, date_format)}
+        {model_field => time_from_public(value)}
       end
       map_to_public model_field do |value|
-        {public_field => value.strftime(date_format)}
+        {public_field => value.utc.strftime(date_format)}
       end
     end
 
@@ -142,11 +142,11 @@ module RailsViewAdapters
 
     private
 
-    def time_from_public(time, date_format)
+    def time_from_public(time)
       if time.is_a? String
-        return Time.strptime(time, date_format)
+        Time.zone.parse(time)
       else
-        return time
+        time
       end
     end
 
