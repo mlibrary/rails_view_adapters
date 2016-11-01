@@ -1,5 +1,5 @@
+# frozen_string_literal: true
 require "spec_helper"
-
 
 module RailsViewAdapters
 
@@ -31,7 +31,7 @@ module RailsViewAdapters
       let(:model_field) { :test123 }
       it "adds the model field" do
         map.add_model_field(model_field)
-        expect(map.to_hash).to eql(bare_hash.merge({model_fields: [model_field]}))
+        expect(map.to_hash).to eql(bare_hash.merge(model_fields: [model_field]))
       end
       it "returns self" do
         expect(map.add_model_field(model_field)).to be(map)
@@ -42,7 +42,7 @@ module RailsViewAdapters
       let(:public_field) { :test123 }
       it "adds the model field" do
         map.add_public_field(public_field)
-        expect(map.to_hash).to eql(bare_hash.merge({public_fields: [public_field]}))
+        expect(map.to_hash).to eql(bare_hash.merge(public_fields: [public_field]))
       end
       it "returns self" do
         expect(map.add_public_field(public_field)).to be(map)
@@ -54,11 +54,11 @@ module RailsViewAdapters
       let(:model_field) { :mod }
       it "adds the simple mapping" do
         map.add_simple_map(model_field, public_field)
-        expect(map.to_hash).to eql(bare_hash.merge({
+        expect(map.to_hash).to eql(bare_hash.merge(
           public_fields: [public_field],
           model_fields: [model_field],
           simple_maps: [[model_field, public_field]]
-        }))
+        ))
       end
       it "returns self" do
         expect(map.add_simple_map(model_field, public_field)).to be(map)
@@ -67,13 +67,13 @@ module RailsViewAdapters
 
     describe "#add_to_map" do
       let(:model_field) { :mod }
-      let(:process) { Proc.new{|v| v + 37} }
+      let(:process) { proc {|v| v + 37 } }
       it "adds the mapping" do
         map.add_to_map(model_field, &process)
-        expect(map.to_hash).to eql(bare_hash.merge({
+        expect(map.to_hash).to eql(bare_hash.merge(
           model_fields: [model_field],
           to_maps: [[model_field, process]]
-        }))
+        ))
       end
       it "returns self" do
         expect(map.add_to_map(model_field, &process)).to be(map)
@@ -82,19 +82,18 @@ module RailsViewAdapters
 
     describe "#add_from_map" do
       let(:public_field) { :pub }
-      let(:process) { Proc.new{|v| v + 37} }
+      let(:process) { proc {|v| v + 37 } }
       it "adds the mapping" do
         map.add_from_map(public_field, &process)
-        expect(map.to_hash).to eql(bare_hash.merge({
+        expect(map.to_hash).to eql(bare_hash.merge(
           public_fields: [public_field],
           from_maps: [[public_field, process]]
-        }))
+        ))
       end
       it "returns self" do
         expect(map.add_from_map(public_field, &process)).to be(map)
       end
     end
-
   end
 
 end

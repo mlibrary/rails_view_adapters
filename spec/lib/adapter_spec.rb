@@ -1,14 +1,14 @@
+# frozen_string_literal: true
 require "spec_helper"
 
 module RailsViewAdapters
   describe Adapter do
-
     describe "::define" do
       it "defines a new class" do
         Adapter.define(:new_test_adapter) {}
-        expect{
+        expect do
           Object.const_get("NewTestAdapter")
-        }.to_not raise_error
+        end.to_not raise_error
       end
 
       it "sets the constant equal to the created adapter" do
@@ -19,7 +19,6 @@ module RailsViewAdapters
       end
     end
 
-
     describe "::adapter_from_map" do
       let(:map) do
         double(:map,
@@ -27,8 +26,7 @@ module RailsViewAdapters
           public_fields: [:p1, :p2],
           simple_maps: [[:m1, :p1]],
           to_maps: [[:m2, double(:proc1)]],
-          from_maps: [[:p2, double(:proc2)]]
-        )
+          from_maps: [[:p2, double(:proc2)]])
       end
       let(:adapter) { Adapter.adapter_from_map(map) }
       it "returns a new class" do
@@ -43,7 +41,5 @@ module RailsViewAdapters
         end
       end
     end
-
-
   end
 end

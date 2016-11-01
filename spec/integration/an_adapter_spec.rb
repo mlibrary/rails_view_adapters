@@ -1,6 +1,6 @@
+# frozen_string_literal: true
 require "active_record_helper"
 require "spec_helper"
-
 
 module RailsViewAdapters
 
@@ -15,7 +15,7 @@ module RailsViewAdapters
       map_bool :admin, :super_user
       hidden_field :secret
       map_from_public :secret do |token|
-        {secret: token}
+        { secret: token }
       end
       map_belongs_to :team, :favorite_team, model_class: Team
       map_has_many :posts, :all_posts, sub_method: :body
@@ -47,8 +47,7 @@ module RailsViewAdapters
       }
     end
 
-
-    it_behaves_like "an adapter", {secret: secret_token} do
+    it_behaves_like "an adapter", secret: secret_token do
       let(:adapter_class) { UserIntegrationTestAdapter }
       let(:model)         { @model }
       let(:public_hash)   { @public_hash }

@@ -1,6 +1,6 @@
+# frozen_string_literal: true
 require "active_record"
 require "fabrication"
-
 
 require "active_record_support/models/user"
 require "active_record_support/models/post"

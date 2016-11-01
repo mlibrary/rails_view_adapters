@@ -1,49 +1,49 @@
+# frozen_string_literal: true
 # Copyright (c) 2015 The Regents of the University of Michigan.
 # All Rights Reserved.
 # Licensed according to the terms of the Revised BSD License
 # See LICENSE.md for details.
 
 # You should define these:
-#let(:model)
-#let(:public_hash)
-#let(:model_hash)
-
+# let(:model)
+# let(:public_hash)
+# let(:model_hash)
 
 shared_examples "an adapter" do |hidden_params|
   hidden_params ||= {}
   describe ".from_model" do
     it "can be created from a model" do
-      expect{
+      expect do
         adapter_class.from_model(model)
-      }.to_not raise_error
+      end.to_not raise_error
     end
   end
 
   describe ".from_public" do
     it "can be created from a model" do
-      expect{
+      expect do
         adapter_class.from_public(public_hash)
-      }.to_not raise_error
+      end.to_not raise_error
     end
     it "handles missing data" do
-      expect{
+      expect do
         adapter_class.from_public({})
-      }.to_not raise_error
+      end.to_not raise_error
     end
   end
 
   context "starting with .from_public" do
-    let(:adapter) { adapter_class.from_public(public_hash.merge({unrelated: :unchanged}).merge(hidden_params)) }
-    include_examples "adapter output", {unrelated: :unchanged}
+    let(:adapter) do
+      adapter_class.from_public(public_hash.merge(unrelated: :unchanged).merge(hidden_params))
+    end
+    include_examples "adapter output", unrelated: :unchanged
   end
-
 
   context "starting with .from_model" do
     let(:adapter) { adapter_class.from_model(model) }
     include_examples "adapter output", {}
   end
 end
-
 
 shared_examples "adapter output" do |params_extra|
   describe "#to_model_hash" do
@@ -70,4 +70,3 @@ shared_examples "adapter output" do |params_extra|
     end
   end
 end
-

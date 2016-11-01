@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # Copyright (c) 2015 The Regents of the University of Michigan.
 # All Rights Reserved.
 # Licensed according to the terms of the Revised BSD License
@@ -10,75 +11,51 @@ module Matchers
       @errors = nil
     end
 
-
     def matches?(actual)
       @errors ||= match(actual, @expected)
-      return @errors == nil
+      @errors.nil?
     end
-
 
     def match_primitives(actual, expected)
-      unless actual == expected
-        "expected #{expected}, got #{actual}"
-      end
+      "expected #{expected}, got #{actual}" unless actual == expected
     end
-
 
     def match_times(actual, expected)
       diff = actual - expected
-      unless diff.between?(-1, 1)
-        "expected #{expected}, got #{actual}"
-      end
+      "expected #{expected}, got #{actual}" unless diff.between?(-1, 1)
     end
-
 
     def match_hashes(actual, expected)
       unless actual.keys.sort == expected.keys.sort
-        extra = (actual.keys-expected.keys).map { |key| "+#{key.to_s}"}
-        missing = (expected.keys-actual.keys).map { |key| "-#{key.to_s}"}
-        return {"Hash keys mismatch:" => extra + missing}
+        extra = (actual.keys - expected.keys).map {|key| "+#{key}" }
+        missing = (expected.keys - actual.keys).map {|key| "-#{key}" }
+        return { "Hash keys mismatch:" => extra + missing }
       end
 
       errors = {}
       actual.keys.each do |key|
         error = match(actual[key], expected[key])
-        if error
-          errors[key] = error
-        end
+        errors[key] = error if error
       end
 
-      if errors.empty?
-        return nil
-      else
-        return errors
-      end
+      errors.empty? ? nil : errors
     end
-
 
     def match_arrays(actual, expected)
       unless actual.size == expected.size
         return "Actual size #{actual.size}, expected #{expected.size}"
       end
-      # errors = [].fill(nil, actual.size)
       errors = []
       actual.each_index do |i|
         error = match(actual[i], expected[i])
-        if error
-          errors[i] = error
-        end
+        errors[i] = error if error
       end
-      if errors.empty?
-        return nil
-      else
-        return errors
-      end
+      errors.empty? ? nil : errors
     end
-
 
     def match_active_records(actual, expected)
-      return match_hashes(actual.attributes.except(:id), expected.attributes.except(:id))
+      match_hashes(actual.attributes.except(:id), expected.attributes.except(:id))
     end
-
 
     def match(actual, expected)
       actual_responds_to = responders(actual)
@@ -99,17 +76,13 @@ module Matchers
       end
     end
 
-
     def responders(obj)
       responds_to = []
       [:each, :push, :has_key?].each do |method|
-        if obj.respond_to? method
-          responds_to << method
-        end
+        responds_to << method if obj.respond_to? method
       end
-      return responds_to
+      responds_to
     end
-
 
     def failure_message
       @errors

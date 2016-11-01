@@ -1,4 +1,4 @@
-
+# frozen_string_literal: true
 module RailsViewAdapters
 
   # Defines the DSL methods that are used to modify the underlying
@@ -17,7 +17,6 @@ module RailsViewAdapters
       map.add_simple_map(model_field, public_field)
     end
 
-
     # Register a mapping from a model field to the public representation.
     # @param [Symbol] model_field
     # @param [Array<Symbol>] extra_public_fields Used to tell the adapter about
@@ -31,7 +30,6 @@ module RailsViewAdapters
       end
     end
 
-
     # Register a mapping from a public field to the model representation.
     # @param [Symbol] public_field
     # @yield [public_value] Given the value of public representation's
@@ -41,13 +39,11 @@ module RailsViewAdapters
       map.add_from_map(public_field, &block)
     end
 
-
     # Register a hidden field, i.e. a field not present in public representations.
     # @param [Symbol] model_field
     def hidden_field(model_field)
       map.add_model_field(model_field)
     end
-
 
     # Register a one-to-one mapping of a date field.
     # @param [Symbol] model_field
@@ -56,27 +52,25 @@ module RailsViewAdapters
     def map_date(model_field, public_field, date_format)
       raise ArgumentError if date_format.nil?
       map_from_public public_field do |value|
-        {model_field => time_from_public(value)}
+        { model_field => time_from_public(value) }
       end
       map_to_public model_field do |value|
-        {public_field => value.utc.strftime(date_format)}
+        { public_field => value.utc.strftime(date_format) }
       end
     end
-
 
     # Register a one-to-one mapping of a boolean field
     # @param [Symbol] model_field
     # @param [Symbol] public_field
     def map_bool(model_field, public_field)
       map_from_public public_field do |value|
-        {model_field => to_bool(value) }
+        { model_field => to_bool(value) }
       end
 
       map_to_public model_field do |value|
-        {public_field => value}
+        { public_field => value }
       end
     end
-
 
     # Register a mapping of a belongs_to association.
     # @param [Symbol] model_field  The field on the model that holds the association,
@@ -92,22 +86,21 @@ module RailsViewAdapters
     def map_belongs_to(model_field, public_field, options = {})
       model_class = options[:model_class] || model_field.to_s.classify.constantize
       sub_method = options[:sub_method] || :id
-      model_field_id = :"#{model_field.to_s.sub(/(_id|)\Z/, '_id')}"
+      model_field_id = :"#{model_field.to_s.sub(/(_id|)\Z/, "_id")}"
 
       unless options[:only] == :to
         map_from_public public_field do |value|
           record = model_class.send(:"find_by_#{sub_method}", value)
-          {model_field_id => record ? record.id : nil}
+          { model_field_id => record ? record.id : nil }
         end
       end
 
       unless options[:only] == :from
         map_to_public model_field_id do |id|
-          {public_field => model_class.find_by(id: id).send(sub_method)}
+          { public_field => model_class.find_by(id: id).send(sub_method) }
         end
       end
     end
-
 
     # Register a mapping of a has_many association.
     # @param [Symbol] model_field  The field on the model that holds the association,
@@ -125,20 +118,21 @@ module RailsViewAdapters
 
       unless options[:only] == :to
         map_from_public public_field do |value|
-          result = {model_field => model_class.where(sub_method => value)}
+          result = { model_field => model_class.where(sub_method => value) }
           public_field_size = value.respond_to?(:size) ? value.size : 0
-          result[model_field] = result[model_field].to_a.fill(nil, result[model_field].size, public_field_size - result[model_field].size)
+          result[model_field] = result[model_field]
+            .to_a
+            .fill(nil, result[model_field].size, public_field_size - result[model_field].size)
           result
         end
       end
 
       unless options[:only] == :from
         map_to_public model_field do |records|
-          {public_field => records.map(&sub_method.to_sym)}
+          { public_field => records.map(&sub_method.to_sym) }
         end
       end
     end
-
 
     private
 
@@ -151,10 +145,10 @@ module RailsViewAdapters
     end
 
     def to_bool(value)
-      return nil if value == nil || value =~ (/^(null|nil)$/i)
-      return true if value == true || value =~ (/^(true|t|yes|y|1)$/i)
-      return false if value == false || value =~ (/^(false|f|no|n|0)$/i)
-      raise ArgumentError.new("invalid value for boolean: \"#{value}\"")
+      return nil if value.nil? || value =~ /^(null|nil)$/i
+      return true if value == true || value =~ /^(true|t|yes|y|1)$/i
+      return false if value == false || value =~ /^(false|f|no|n|0)$/i
+      raise ArgumentError, "invalid value for boolean: \"#{value}\""
     end
 
   end
