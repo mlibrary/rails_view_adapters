@@ -80,7 +80,7 @@ module RailsViewAdapters
       let(:model_field) { :mod }
       let(:public_field) { :pub }
       let(:date_format) { "%Y-%m-%dT%H:%M:%SZ" }
-      let(:time) { Time.new(2016, 10, 31, 12, 25, 33) }
+      let(:time) { Time.new(2016, 10, 31, 12, 25, 33).utc }
       let(:time_string) { time.strftime(date_format)}
       it "creates the correct model_fields" do
         proxy.map_date(model_field, public_field, date_format)
