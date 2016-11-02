@@ -1,7 +1,7 @@
 # Rails View Adapters
 
 [![Build Status](https://travis-ci.org/mlibrary/rails_view_adapters.svg?branch=master)](https://travis-ci.org/mlibrary/rails_view_adapters)
-
+[![Coverage Status](https://coveralls.io/repos/github/mlibrary/rails_view_adapters/badge.svg?branch=master)](https://coveralls.io/github/mlibrary/rails_view_adapters?branch=master)
 
 This gem provides a 
 [DSL](http://www.rubydoc.info/github/mlibrary/rails_view_adapters/master/RailsViewAdapters/DefinitionProxy)
