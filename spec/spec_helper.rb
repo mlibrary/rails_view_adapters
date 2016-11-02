@@ -1,7 +1,13 @@
 # frozen_string_literal: true
 
+require "simplecov"
 require "coveralls"
-Coveralls.wear!
+
+SimpleCov.formatter = Coveralls::SimpleCov::Formatter
+SimpleCov.start do
+  add_filter "/.bundle/"
+  add_filter "/spec/"
+end
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
