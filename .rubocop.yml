@@ -7,18 +7,6 @@ AllCops:
   DisplayCopNames: true
   TargetRubyVersion: 2.3
 
-Style/Copyright:
-  Enabled: true
-  Notice: |
-    Copyright (c) 2015 The Regents of the University of Michigan.
-    All Rights Reserved.
-    Licensed according to the terms of the Revised BSD License
-    See LICENSE.md for details.
-  AutocorrectNotice: |
-    Copyright (c) 2015 The Regents of the University of Michigan.
-    All Rights Reserved.
-    Licensed according to the terms of the Revised BSD License
-    See LICENSE.md for details.
 
 Style/Alias:
   EnforcedStyle: prefer_alias_method
