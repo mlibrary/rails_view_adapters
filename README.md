@@ -86,3 +86,11 @@ Do note that the above relies on your controllers and adapters being named predi
 
 ## Documentation
 http://www.rubydoc.info/github/mlibrary/rails_view_adapters/
+
+# License
+
+Copyright (c) 2015 The Regents of the University of Michigan.
+All Rights Reserved.
+Licensed according to the terms of the Revised BSD License.
+See LICENSE.md for details.
+
