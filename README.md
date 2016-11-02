@@ -1,5 +1,8 @@
 # Rails View Adapters
 
+[![Build Status](https://travis-ci.org/mlibrary/rails_view_adapters.svg?branch=master)](https://travis-ci.org/mlibrary/rails_view_adapters)
+
+
 This gem provides a 
 [DSL](http://www.rubydoc.info/github/mlibrary/rails_view_adapters/master/RailsViewAdapters/DefinitionProxy)
 for defining adapters that map your model's 
