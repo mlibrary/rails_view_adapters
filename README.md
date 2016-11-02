@@ -1,36 +1,88 @@
-# RailsViewAdapters
+# Rails View Adapters
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/rails_view_adapters`. To experiment with that code, run `bin/console` for an interactive prompt.
+This gem provides a 
+[DSL](http://www.rubydoc.info/github/mlibrary/rails_view_adapters/master/RailsViewAdapters/DefinitionProxy)
+for defining adapters that map your model's 
+representations to those of your views, and vice versa.  
 
-TODO: Delete this and the text above, and describe your gem
+### Adapters are presenters
 
-## Installation
-
-Add this line to your application's Gemfile:
+The adapters can be used to convert a model to its public representation,
+including associated models, as well as support for arbitrary operations.
 
 ```ruby
-gem 'rails_view_adapters'
+FooAdapter.from_model(Foo.find(id)).to_public_hash
 ```
 
-And then execute:
+### Adapters wrap input parameters
 
-    $ bundle
+The adapters also understand how to "undo" the presentation logic,
+converting the public representation back to the model or models 
+that (may have) generated it.
 
-Or install it yourself as:
-
-    $ gem install rails_view_adapters
+```ruby
+Bar.new(BarAdapter.from_public(params).to_params_hash)
+```
 
 ## Usage
 
-TODO: Write usage instructions here
+### Basics 
 
-## Development
+Define your adapter using the DSL.
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+```ruby
+# lib/adapters/team_member_adapter.rb
+require "rails_view_adapters"
+RailsViewAdapters::Adapter.define(:team_member_adapter) do
+  map_simple :name, :author
+  map_date :join_date, :member_since, date_format
+  map_date :created_at, :created_at, date_format
+  map_date :updated_at, :updated_at, date_format
+  map_bool :admin, :super_user
+  hidden_field :secret
+  map_from_public :secret do |token|
+    { secret: token }
+  end
+  map_belongs_to :team, :favorite_team, model_class: Team
+  map_has_many :posts, :all_posts, sub_method: :body
+end
+```
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+Then require and use it like you would any other class.
 
-## Contributing
+```ruby
+require "lib/adapters/team_member_adapter"
+TeamMemberAdapter.from_model(TeamMember.find(params[:id])).to_public_hash
+```
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/rails_view_adapters.
+### Rails
 
+I've found it convenient to create a concern that gets invoked in a controller
+`before_action` to automatically grab the right adapter, instantiate it, and use
+it to modify the params hash.  Something like this:
+
+```ruby
+module Adaptation
+  extend ActiveSupport::Concern
+
+  included do
+    append_before_action :adapt_params
+  end
+
+  private
+  def adapt_params
+    adapter = "#{controller_path.classify.gsub("Controller", "")}Adapter".constantize
+    params.merge!(adapter.from_public(params).to_params_hash) {|key,lhs,rhs| rhs}
+  end
+end
+```
+
+### Testing Adapters
+
+Individual needs will vary, but for a reasonable integration test take a look at 
+`spec/integration/an_adapter_spec.rb`
+
+Do note that the above relies on your controllers and adapters being named predictably.
+
+## Documentation
+http://www.rubydoc.info/github/mlibrary/rails_view_adapters/
