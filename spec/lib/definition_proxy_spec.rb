@@ -81,8 +81,8 @@ module RailsViewAdapters
       let(:model_field) { :mod }
       let(:public_field) { :pub }
       let(:date_format) { "%Y-%m-%dT%H:%M:%SZ" }
-      let(:time) { Time.new(2016, 10, 31, 12, 25, 33).utc }
-      let(:time_string) { time.strftime(date_format) }
+      let(:time) { Time.utc(2012, 6, 10, 13, 07, 33) }
+      let(:time_string) { "2012-06-10T13:07:33Z" }
       it "creates the correct model_fields" do
         proxy.map_date(model_field, public_field, date_format)
         expect(proxy.map.model_fields).to eql([model_field])

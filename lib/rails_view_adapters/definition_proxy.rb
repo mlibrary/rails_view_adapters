@@ -1,4 +1,7 @@
 # frozen_string_literal: true
+
+require "active_support/time_with_zone"
+
 module RailsViewAdapters
 
   # Defines the DSL methods that are used to modify the underlying
@@ -45,14 +48,19 @@ module RailsViewAdapters
       map.add_model_field(model_field)
     end
 
-    # Register a one-to-one mapping of a date field.
+    # Register a one-to-one mapping of a date field. When converting
+    # from the public representation, if the non-string values are
+    # returned as-is.  Strings that cannot be parsed with the given
+    # date_format string are returned as nil.
+    #
+    # If no timezone is provided, utc is assumed.  
     # @param [Symbol] model_field
     # @param [Symbol] public_field
     # @param [String] date_format The Date format to use.
     def map_date(model_field, public_field, date_format)
       raise ArgumentError if date_format.nil?
       map_from_public public_field do |value|
-        { model_field => time_from_public(value) }
+        { model_field => time_from_public(value, date_format) }
       end
       map_to_public model_field do |value|
         { public_field => value.utc.strftime(date_format) }
@@ -136,12 +144,31 @@ module RailsViewAdapters
 
     private
 
-    def time_from_public(time)
+    def time_from_public(time, date_format)
       if time.is_a? String
-        Time.zone.parse(time)
+        parts_to_time(DateTime._strptime(time, date_format))
       else
         time
       end
+    end
+
+    def parts_to_time(parts)
+      return nil if parts.empty?
+      begin
+      time = Time.new(
+        parts.fetch(:year),
+        parts.fetch(:mon),
+        parts.fetch(:mday),
+        parts.fetch(:hour),
+        parts.fetch(:min),
+        parts.fetch(:sec) + parts.fetch(:sec_fraction, 0),
+        parts.fetch(:offset, 0)
+      )
+      rescue KeyError
+        return nil
+      end
+
+      ActiveSupport::TimeWithZone.new(time.utc, Time.zone)
     end
 
     def to_bool(value)
