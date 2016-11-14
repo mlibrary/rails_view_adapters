@@ -40,7 +40,7 @@ module RailsViewAdapters
         join_date: @model.join_date,
         admin: @model.admin,
         secret: @model.secret,
-        team_id: @model.team_id,
+        team: @model.team,
         posts: @model.posts,
         created_at: @model.created_at,
         updated_at: @model.updated_at

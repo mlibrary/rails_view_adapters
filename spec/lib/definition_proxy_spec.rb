@@ -190,13 +190,13 @@ module RailsViewAdapters
       end
       it "defines a to_map that converts the model's parent to the public's field:value string" do
         proxy.map_belongs_to(model_field, public_field, options)
-        expect(proxy.map.to_maps[0][1].call(post.user.id))
+        expect(proxy.map.to_maps[0][1].call(post.user))
           .to eql(public_field => post.user.name)
       end
-      it "defines a from_map that converts the public's string to the model's owning model id" do
+      it "defines a from_map that converts the public's string to the model's owning model object" do
         proxy.map_belongs_to(model_field, public_field, options)
         expect(proxy.map.from_maps[0][1].call(post.user.name))
-          .to eql(model_field => post.user.id)
+          .to eql(model_field => post.user)
       end
     end
 

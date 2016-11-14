@@ -94,18 +94,17 @@ module RailsViewAdapters
     def map_belongs_to(model_field, public_field, options = {})
       model_class = options[:model_class] || model_field.to_s.classify.constantize
       sub_method = options[:sub_method] || :id
-      model_field_id = :"#{model_field.to_s.sub(/(_id|)\Z/, "_id")}"
 
       unless options[:only] == :to
         map_from_public public_field do |value|
           record = model_class.send(:"find_by_#{sub_method}", value)
-          { model_field_id => record ? record.id : nil }
+          { model_field => record ? record : model_class.new(sub_method => value) }
         end
       end
 
       unless options[:only] == :from
-        map_to_public model_field_id do |id|
-          { public_field => model_class.find_by(id: id).send(sub_method) }
+        map_to_public model_field do |record|
+          { public_field => record.send(sub_method) }
         end
       end
     end
