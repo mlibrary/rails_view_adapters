@@ -81,7 +81,7 @@ module RailsViewAdapters
       let(:model_field) { :mod }
       let(:public_field) { :pub }
       let(:date_format) { "%Y-%m-%dT%H:%M:%SZ" }
-      let(:time) { Time.utc(2012, 6, 10, 13, 07, 33) }
+      let(:time) { Time.utc(2012, 6, 10, 13, 7, 33) }
       let(:time_string) { "2012-06-10T13:07:33Z" }
       it "creates the correct model_fields" do
         proxy.map_date(model_field, public_field, date_format)
@@ -193,7 +193,7 @@ module RailsViewAdapters
         expect(proxy.map.to_maps[0][1].call(post.user))
           .to eql(public_field => post.user.name)
       end
-      it "defines a from_map that converts the public's string to the model's owning model object" do
+      it "defines a from_map that converts the public string to the model's owning model object" do
         proxy.map_belongs_to(model_field, public_field, options)
         expect(proxy.map.from_maps[0][1].call(post.user.name))
           .to eql(model_field => post.user)

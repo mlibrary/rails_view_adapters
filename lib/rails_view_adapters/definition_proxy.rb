@@ -53,7 +53,7 @@ module RailsViewAdapters
     # returned as-is.  Strings that cannot be parsed with the given
     # date_format string are returned as nil.
     #
-    # If no timezone is provided, utc is assumed.  
+    # If no timezone is provided, utc is assumed.
     # @param [Symbol] model_field
     # @param [Symbol] public_field
     # @param [String] date_format The Date format to use.
@@ -154,15 +154,15 @@ module RailsViewAdapters
     def parts_to_time(parts)
       return nil if parts.empty?
       begin
-      time = Time.new(
-        parts.fetch(:year),
-        parts.fetch(:mon),
-        parts.fetch(:mday),
-        parts.fetch(:hour),
-        parts.fetch(:min),
-        parts.fetch(:sec) + parts.fetch(:sec_fraction, 0),
-        parts.fetch(:offset, 0)
-      )
+        time = Time.new(
+          parts.fetch(:year),
+          parts.fetch(:mon),
+          parts.fetch(:mday),
+          parts.fetch(:hour),
+          parts.fetch(:min),
+          parts.fetch(:sec) + parts.fetch(:sec_fraction, 0),
+          parts.fetch(:offset, 0)
+        )
       rescue KeyError
         return nil
       end
